@@ -1,64 +1,72 @@
-//let img_s;
-//let img_m;
-//let img_e;
+let t = 0; // 시간 변수
+let mode='WAVE'
+let x,y,r;
 
-function setup() {
-  createCanvas(500, 350, WEBGL);
-  //img_e = loadImage('images/_earth.png');
-  //img_s = loadImage('images/_sun.png');
-  //img_m = loadImage('images/moon.png');
-  textureWrap(CLAMP);
+function setup(){
+  createCanvas(windowWidth,windowHeight); 
 }
 
-function draw() {
-  noStroke();
-  background(0);
-  //move your mouse to change light position
-  let locX = mouseX - height / 2;
-  let locY = mouseY - width / 2;
-  
-  let dirX = (mouseX / width - 0.5) * 2;
-  let dirY = (mouseY / height - 0.5) * 2;
+function draw(){
 
-  //sun
-  push();
-  translate(250, 0);
-  shininess(20);
-  ambientLight(50);
-  specularColor(255, 0, 0);
-  pointLight(255, 0, 0,100,0,100);
-  //fill(255,0,0);
-  //texture(img_s);
-  sphere(100);
-  pop();
+  background(10,10);
+  randomSeed(0);
+  stroke(255);
   
-  //earth
-  push();
-  translate(0,0,0);
-  rotateZ(frameCount * 0.004);
-  rotateY(frameCount * 0.005);
-  shininess(20);
-  ambientLight(50);
-  specularColor(0, 102,255);
-  pointLight(0, 102,255,50,0,100);
-  //texture(img_e);
-  sphere(50);
-  pop();
+  delta=map(mouseX,0,windowWidth,10,100);
+
+  for(y=0;y<windowHeight;y+=delta){
+    for(x=0;x<windowWidth;x+=delta){
+      r=random(0,1);
+      
+      if(r<0.2){
+        push();
+        stroke(0,149,118);
+        strokeWeight(2);
+        line(x,y+delta,x+delta,y);
+        pop()
+        } else if(r<0.5){
+          noStroke();
+          switch(mode){
+            case 'BLACK': 
+              noFill();
+              stroke(0,149,118);
+              break;
+            case 'WAVE': fill(0,198,198); 
+              break;
+          }
+          ellipse(x,y,delta/2,delta/2,10);
+
+        } else {
+          stroke(0,198,198);
+          line(x+delta,y,x,y);
+          moveell()}
+      } 
+    }
+    t = t + 0.01; // 시간 업데이트
+}
+
+function moveell(){
+    // 각 타원의 시작 점은 마우스 위치에 따라 달라집니다.
+      const xAngle = map(mouseX, 0, width, -4 * PI, 4 * PI, true);
+      const yAngle = map(mouseY, 0, height, -4 * PI, 4 * PI, true);
+// 또, 파티클의 위치에 따라 달라집니다.
+      const angle = xAngle * (x / width) + yAngle * (y / height);
   
-  
-  //moon
-  push();
-  //조명 조절
-  ambientLight(30);
-  ambientMaterial(250);
-  pointLight(253, 253, 253, locX, locY, 300);
-  directionalLight(250, 250, 250, -dirX, -dirY, -0.1);
-  
-  //돌게 하는 부분
-  ellipseMode(CENTER);
-  translate(p5.Vector.fromAngle(millis() / 2500, 100));   //이동시킬 벡터
-  fill(211);
-  //texture(img_m);
-  sphere(40);
-  pop();
+
+// 각 파티클은 동그라미를 그리며 움직입니다.
+      const myX = x + 20 * cos(2 * PI * t + angle);
+      const myY = y + 20 * sin(2 * PI * t + angle);
+      ellipse(myX, myY, 10); // 파티클로 그리기
+}
+
+function keyPressed(){
+  switch(key){
+    case '1': mode='BLACK';
+    break;
+    case '2': mode='WAVE';
+    break;
+    default: mode='NONE';
+    break;
+  }
+  print(mode);
 }
